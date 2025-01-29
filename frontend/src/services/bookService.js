@@ -6,7 +6,7 @@ const API_URL = 'http://localhost:8080/api/books';
 export const getAllBooks = async () => {
   const username = localStorage.getItem('username'); // Recupera el username almacenado
   if (!username) {
-    throw new Error('El usuario no está autenticado.');
+    throw new Error('El usuario no está en el sistema')
   }
 
   const response = await axios.get(API_URL, {

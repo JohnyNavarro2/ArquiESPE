@@ -16,8 +16,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private UserService userService;
+/*     @Autowired
+    private UserService userService; */
 
     // Registrar un usuario
     public User createUser(User user) {
@@ -47,16 +47,11 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public void deleteUserByIdInstitucional(String idInstitucional) {
-        userRepository.findByIdInstitucional(idInstitucional).ifPresent(userRepository::delete);
-    }
-
-    @DeleteMapping("/{idInstitucional}")
-    public ResponseEntity<?> deleteUser(@PathVariable String idInstitucional) {
-        userService.deleteUserByIdInstitucional(idInstitucional);
-        return ResponseEntity.ok().build();
-    }
-
+   // Eliminar usuario por ID institucional
+   public void deleteUserByIdInstitucional(String idInstitucional) {
+    userRepository.findByIdInstitucional(idInstitucional)
+            .ifPresent(userRepository::delete);
+}
 
     // Obtener usuarios por rol
     public List<User> getUsersByRole(Integer role) {
@@ -72,14 +67,49 @@ public class UserService {
     }
 
     // Actualizar un usuario por ID institucional
-    public User updateUserByIdInstitucional(String idInstitucional, User updatedUser) {
+/*     public User updateUserByIdInstitucional(String idInstitucional, User updatedUser) {
         User existingUser = userRepository.findByIdInstitucional(idInstitucional)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
         existingUser.setUsername(updatedUser.getUsername());
         existingUser.setRole(updatedUser.getRole());
         userRepository.save(existingUser);
         return existingUser;
+    } */
+
+    public User updateUserByIdInstitucional(String idInstitucional, User updatedUser) {
+        User existingUser = userRepository.findByIdInstitucional(idInstitucional)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    
+        // Solo actualizar los valores si realmente cambian
+        if (updatedUser.getUsername() != null && !updatedUser.getUsername().isEmpty()) {
+            existingUser.setUsername(updatedUser.getUsername());
+        }
+    
+        if (updatedUser.getRole() != null) {
+            existingUser.setRole(updatedUser.getRole());
+        }
+    
+        if (updatedUser.getStatus() != null) {
+            existingUser.setStatus(updatedUser.getStatus());
+        }
+    
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            existingUser.setPassword(updatedUser.getPassword()); // Puedes encriptarla aquí
+        }
+    
+        if (updatedUser.getIdInstitucional() != null && !updatedUser.getIdInstitucional().equals(idInstitucional)) {
+            existingUser.setIdInstitucional(updatedUser.getIdInstitucional());
+        }
+    
+        return userRepository.save(existingUser);
     }
+    
+    // Verificar si existe un usuario por ID institucional
+    public boolean existsByIdInstitucional(String idInstitucional) {
+        return userRepository.existsByIdInstitucional(idInstitucional);
+    }
+    
+
 
     // Activar un usuario por ID institucional
     public void activateUserByIdInstitucional(String idInstitucional) {
@@ -88,4 +118,9 @@ public class UserService {
         user.setStatus(true); // Activar usuario
         userRepository.save(user);
     }
+
+    
+
+
+
 }

@@ -25,7 +25,7 @@ public class LoanService {
     @Autowired
     private BookClient bookClient;
 
-    @FeignClient(name = "book-service", url = "http://localhost:8081/api/books")
+    @FeignClient(name = "book-service", url = "http://localhost:8080/api/books")
     public interface BookClient {
 
         @PutMapping("/{bookId}/update-quantity")

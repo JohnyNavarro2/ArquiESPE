@@ -13,11 +13,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/users")
 public class UserController {
     @Autowired
     private UserService userService;
+
+    //Método para eliminar un usuario
+    @DeleteMapping("/{idInstitucional}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String idInstitucional) {
+        userService.deleteUserByIdInstitucional(idInstitucional);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
     // Método para verificar si el usuario es Administrador
     private boolean isAdmin(User user) {
@@ -109,7 +118,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    // Actualizar un usuario (solo para Administrador)
+/*     // Actualizar un usuario (solo para Administrador)
     @PutMapping("/{idInstitucional}")
     public ResponseEntity<?> updateUser(@RequestHeader("username") String username, @PathVariable String idInstitucional, @RequestBody User updatedUser) {
         User currentUser = userService.getUserByUsername(username).orElse(null);
@@ -118,6 +127,32 @@ public class UserController {
         }
         User user = userService.updateUserByIdInstitucional(idInstitucional, updatedUser);
         return ResponseEntity.ok(user);
-    }
+    } */
+
+// ✅ Actualizar usuario (solo Administrador) con validación y manejo de errores
+@PutMapping("/{idInstitucional}")
+public ResponseEntity<?> updateUser(@RequestHeader("username") String username,
+                                    @PathVariable String idInstitucional, 
+                                    @RequestBody User updatedUser) {
+    User currentUser = userService.getUserByUsername(username).orElse(null);
     
+    // Verificar si el usuario que intenta actualizar es administrador
+    if (!isAdmin(currentUser)) {
+        return ResponseEntity.status(403).body("Acceso denegado. Solo el Administrador puede gestionar usuarios.");
+    }
+
+    // Validar si el usuario existe antes de actualizar
+    if (!userService.existsByIdInstitucional(idInstitucional)) {
+        return ResponseEntity.status(404).body("Usuario no encontrado.");
+    }
+
+    try {
+        User user = userService.updateUserByIdInstitucional(idInstitucional, updatedUser);
+        return ResponseEntity.ok(user);
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body("Error al actualizar el usuario: " + e.getMessage());
+    }
+}
+
+
 }

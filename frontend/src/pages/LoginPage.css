@@ -3,7 +3,22 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f8f9fa;
+    background-image: url('https://img.freepik.com/fotos-premium/grupo-estudiantes-estan-estudiando-arbol-solitario-cesped-campus_538213-96625.jpg?w=996');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+/* 🔹 Agregado el título "Sistema Bibliotecario" */
+.library-title {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
 }
 
 .login-box {
@@ -12,6 +27,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     text-align: center;
+    z-index: 1;
 }
 
 .logo {
